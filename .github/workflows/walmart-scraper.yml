@@ -1,9 +1,9 @@
 name: Run Walmart Scraper
 
 on:
-  workflow_dispatch: # manual run
+  workflow_dispatch:
   schedule:
-    - cron: '0 9 * * 5' # Every Friday at 9:00 AM UTC
+    - cron: '0 9 * * 5'
 
 jobs:
   run-scraper:
@@ -34,10 +34,13 @@ jobs:
             libgtk-3-0 \
             libdrm2 \
             libgbm1 \
-            libasound2t64 # 🟢 updated from libasound2
+            libasound2t64
 
       - name: Install Node.js dependencies
         run: npm install
 
+      - name: Install Chromium for Puppeteer
+        run: npx puppeteer browsers install chrome
+
       - name: Run scraper
-        run: WalmartTrigerData.js
+        run: node WalmartTrigerData.js
