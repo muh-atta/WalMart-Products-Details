@@ -1,42 +1,43 @@
 name: Walmart Scraper
 
 on:
+  workflow_dispatch:
   schedule:
-    - cron: "*/2 * * * *"   # Every 2 minutes
-  workflow_dispatch:         # Allow manual run from GitHub UI
-
-permissions:
-  contents: write
+    - cron: '0 9 * * 5' # every Friday at 9:00 AM
 
 jobs:
-  scrape-and-push:
+  run-scraper:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repo
+      - name: 📥 Checkout code
         uses: actions/checkout@v3
 
-      - name: Set up Node.js
+      - name: 🟢 Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: 18
 
-      - name: Install dependencies
+      - name: 📦 Install dependencies
         run: npm install
 
-      - name: Run Walmart Scraper
+      - name: 🧱 Install required packages for Chromium
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libx11-dev \
+            libx11-xcb1 \
+            libxcomposite1 \
+            libxcursor1 \
+            libxdamage1 \
+            libxi6 \
+            libxtst6 \
+            libnss3 \
+            libatk-bridge2.0-0 \
+            libgtk-3-0 \
+            libdrm2 \
+            libgbm1 \
+            libasound2
+
+      - name: 🚀 Run Puppeteer Script
         run: node WalmartTrigerData.js
-
-      - name: Configure Git
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-
-      - name: Commit and push if data changed
-        run: |
-          git add walmart-data.json walmart-data.csv
-          if ! git diff --cached --quiet; then
-            git commit -m "📦 Update scraped data $(date)"
-            git push
-          else
-            echo "No changes to commit."
