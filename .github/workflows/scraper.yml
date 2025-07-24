@@ -1,33 +1,25 @@
-name: Weekly Walmart Scraper
+name: Walmart Scraper
 
 on:
   schedule:
-    - cron: '0 4 * * 5'   # Every Friday 9AM PKT (4AM UTC)
-  workflow_dispatch:       # Optional manual trigger
+    - cron: "*/2 * * * *"  # Every 2 minutes
+  workflow_dispatch:       # Manual trigger button
 
 jobs:
-  run:
+  run-scraper:
     runs-on: ubuntu-latest
-    steps:
-      - name: 📦 Checkout code
-        uses: actions/checkout@v3
 
-      - name: 🧰 Setup Node.js
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 18
+          node-version: '18'
 
-      - name: 📥 Install dependencies
+      - name: Install dependencies
         run: npm install
 
-      - name: 🚀 Run the scraper
-        run: node index.js
-
-      - name: 💾 Commit updated data
-        run: |
-          git config --global user.name 'GitHub Action'
-          git config --global user.email 'action@github.com'
-          git add data/
-          git commit -m "🔁 Auto-update Walmart data"
-          git push
-        continue-on-error: true
+      - name: Run Walmart Scraper
+        run: node WalmartTrigerData.js
