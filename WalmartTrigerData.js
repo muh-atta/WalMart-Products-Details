@@ -23,7 +23,9 @@ const skus = ["10450893", "15754233", "15570903", "10450909", "10450904", "31775
 async function runScraper() {
     console.log(`\n⏱Scraper started at ${new Date().toLocaleString()}`);
 
-    const browser = await puppeteer.launch({ headless: false });
+    // const browser = await puppeteer.launch({ headless: true });
+    const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+
     const page = await browser.newPage();
     let allData = [];
 
@@ -106,7 +108,7 @@ runScraper();
 // });
 
 
-cron.schedule('*/2 * * * *', () => {
-    console.log('\nScheduled run triggered!');
-    runScraper();
-});
+// cron.schedule('*/2 * * * *', () => {
+//     console.log('\nScheduled run triggered!');
+//     runScraper();
+// });
