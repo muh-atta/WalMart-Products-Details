@@ -1,12 +1,12 @@
 name: Run Walmart Scraper
 
 permissions:
-  contents: write  # ✅ Required for pushing changes
+  contents: write 
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: '*/5 * * * *'  # ✅ Run every 5 minutes
+    - cron: '0 */2 * * *'
 
 jobs:
   run-scraper:
@@ -16,7 +16,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          persist-credentials: false  # ⛔️ We use PAT manually
+          persist-credentials: false  
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
