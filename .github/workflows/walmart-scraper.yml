@@ -1,5 +1,6 @@
 name: Run Walmart Scraper
-
+permissions:
+  contents: write # ⬅️ This line gives permission to push changes
 on:
   workflow_dispatch:
   schedule:
@@ -13,7 +14,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          persist-credentials: false # Use PAT manually
+          persist-credentials: true # Use PAT manually
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
