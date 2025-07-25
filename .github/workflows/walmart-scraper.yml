@@ -11,7 +11,7 @@ on:
 jobs:
   run-scraper:
     runs-on: ubuntu-latest
-
+ 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -54,6 +54,8 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git fetch origin
+          git pull origin main --rebase
           git add walmart-data.csv walmart-data.json
           git commit -m "Auto update scraped data - $(date)" || echo "No changes to commit"
           git remote set-url origin https://github-actions:${{ secrets.ACTIONS_PAT }}@github.com/mirzahanzla/Project-Product-Details.git
