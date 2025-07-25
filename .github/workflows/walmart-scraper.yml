@@ -50,20 +50,23 @@ jobs:
       - name: Run scraper script
         run: node WalmartTrigerData.js
 
-      - name: Commit and push changes
-        run: |
-              git config --global user.name "github-actions[bot]"
-              git config --global user.email "github-actions[bot]@users.noreply.github.com"
+      - name: Commit and Push Scraped Data
+  run: |
+    git config --global user.name "github-actions[bot]"
+    git config --global user.email "github-actions[bot]@users.noreply.github.com"
 
-              git reset --hard HEAD        # ✅ clean workspace
-              git fetch origin main
-              git pull origin main --rebase || echo "Nothing to rebase"
+    # Save changes to prevent conflict before pulling
+    git add walmart-data.csv walmart-data.json
+    git commit -m "Auto update scraped data - $(date)" || echo "No changes to commit"
 
-              git add walmart-data.csv walmart-data.json
-              git commit -m "Auto update scraped data - $(date)" || echo "No changes to commit"
+    # Pull latest from main branch safely
+    git pull origin main --rebase --autostash
 
-              git remote set-url origin https://github-actions:${{ secrets.ACTIONS_PAT }}@github.com/mirzahanzla/Project-Product-Details.git
-              git push origin HEAD:main
+    # Push committed changes to GitHub
+    git push origin HEAD:main
+  env:
+    ACTIONS_PAT: ${{ secrets.GITHUB_TOKEN }}
+
 
         env:
           ACTIONS_PAT: ${{ secrets.ACTIONS_PAT }}
