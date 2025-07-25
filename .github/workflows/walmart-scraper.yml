@@ -1,22 +1,23 @@
 name: Run Walmart Scraper
 
 permissions:
-  contents: write 
+  contents: write
 
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 */2 * * *'
+    - cron: '0 */2 * * *'  # Every 2 hours
 
 jobs:
   run-scraper:
     runs-on: ubuntu-latest
- 
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          persist-credentials: false  
+          token: ${{ secrets.GITHUB_TOKEN }}
+          persist-credentials: true
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -51,18 +52,14 @@ jobs:
         run: node WalmartTrigerData.js
 
       - name: Commit and Push Scraped Data
-  run: |
-    git config --global user.name "github-actions[bot]"
-    git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git config pull.rebase false  # prevent rebase errors
 
-    # Save changes to prevent conflict before pulling
-    git add walmart-data.csv walmart-data.json
-    git commit -m "Auto update scraped data - $(date)" || echo "No changes to commit"
-
-    # Pull latest from main branch safely
-    git pull origin main --rebase --autostash
-
-    # Push committed changes to GitHub
-    git push origin HEAD:main
-  env:
-    ACTIONS_PAT: ${{ secrets.GITHUB_TOKEN }}
+          git add walmart-data.csv walmart-data.json
+          git commit -m "Auto update scraped data - $(date)" || echo "No changes to commit"
+          git pull origin main || echo "Nothing to pull"
+          git push origin HEAD:main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
