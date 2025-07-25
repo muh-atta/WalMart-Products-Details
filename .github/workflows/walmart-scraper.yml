@@ -3,7 +3,7 @@ name: Run Walmart Scraper
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 9 * * 5'
+     - cron: '*/5 * * * *' # Runs every 5 minutes
 
 jobs:
   run-scraper:
@@ -12,6 +12,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          persist-credentials: true # important for pushing changes
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -44,3 +46,13 @@ jobs:
 
       - name: Run scraper
         run: node WalmartTrigerData.js
+
+      - name: Commit and push updated data
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          git add walmart-data.csv walmart-data.json
+          git commit -m "🔄 Auto update scraped data - $(date)" || echo "No changes to commit"
+          git push
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
