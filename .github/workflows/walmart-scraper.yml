@@ -52,13 +52,18 @@ jobs:
 
       - name: Commit and push changes
         run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          git fetch origin
-          git pull origin main --rebase
-          git add walmart-data.csv walmart-data.json
-          git commit -m "Auto update scraped data - $(date)" || echo "No changes to commit"
-          git remote set-url origin https://github-actions:${{ secrets.ACTIONS_PAT }}@github.com/mirzahanzla/Project-Product-Details.git
-          git push origin HEAD:main
+              git config --global user.name "github-actions[bot]"
+              git config --global user.email "github-actions[bot]@users.noreply.github.com"
+
+              git reset --hard HEAD        # ✅ clean workspace
+              git fetch origin main
+              git pull origin main --rebase || echo "Nothing to rebase"
+
+              git add walmart-data.csv walmart-data.json
+              git commit -m "Auto update scraped data - $(date)" || echo "No changes to commit"
+
+              git remote set-url origin https://github-actions:${{ secrets.ACTIONS_PAT }}@github.com/mirzahanzla/Project-Product-Details.git
+              git push origin HEAD:main
+
         env:
           ACTIONS_PAT: ${{ secrets.ACTIONS_PAT }}
