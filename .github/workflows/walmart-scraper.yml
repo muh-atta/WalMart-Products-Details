@@ -6,7 +6,7 @@ permissions:
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 */2 * * *'  # Every 2 hours
+    - cron: '0 0 1 1 *'  # Once a year on Jan 1st at 00:00
 
 jobs:
   run-scraper:
