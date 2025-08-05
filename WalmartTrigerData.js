@@ -22,7 +22,6 @@ const skus = ["10450893", "15754233", "15570903", "10450909", "10450904", "31775
 async function runScraper() {
     console.log(`\n⏱Scraper started at ${new Date().toLocaleString()}`);
 
-    // const browser = await puppeteer.launch({ headless: true });
     const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox'] });
 
     const page = await browser.newPage();
@@ -54,9 +53,18 @@ async function runScraper() {
 
                 const productDivs = document.querySelectorAll('div[data-automation-id="product-price"]');
                 productDivs.forEach(div => {
-                    const priceSpan = div.querySelector('.w_iUH7');
-                    const price = priceSpan?.innerText || 'N/A';
-                    results.push({ Date: new Date().toISOString(), title, price, link });
+                     const priceSpan = div.querySelector('.w_iUH7');
+                    let rawPrice = priceSpan?.innerText || 'N/A';
+
+                    const cleanedPrice = rawPrice.match(/\$?\d+(\.\d{1,2})?/);
+                    const finalPrice = cleanedPrice ? cleanedPrice[0].replace('$', '') : 'N/A';
+
+                    results.push({
+                        Date: new Date().toISOString(),
+                        title,
+                        price: `$${finalPrice}`,
+                        link
+                    });
                 });
 
                 return results;
@@ -99,15 +107,3 @@ async function runScraper() {
 }
 
 runScraper();
-
-// // 2️⃣ Schedule to run every Friday at 9:00 AM
-// cron.schedule('0 9 * * 5', () => {
-//     console.log('\n🔁 Scheduled run triggered!');
-//     runScraper();
-// });
-
-
-// cron.schedule('*/2 * * * *', () => {
-//     console.log('\nScheduled run triggered!');
-//     runScraper();
-// });
